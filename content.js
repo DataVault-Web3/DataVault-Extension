@@ -838,7 +838,6 @@ function tryAggressiveFallbackExtraction() {
             const order = {
                 itemName: text,
                 amazonLink: href,
-                price: price,
                 dateOrdered: date,
                 returnStatus: 'Not returned'
             };
@@ -951,7 +950,7 @@ function extractOrderDataFromCard(orderCard) {
             const order = {
                 itemName: productTitle,
                 amazonLink: href.startsWith('http') ? href : 'https://amazon.in' + href,
-                price: orderTotal || '₹0.00',
+                price: orderTotal,
                 dateOrdered: orderDate ? parseAmazonDateToISO(orderDate) : getDefaultDate(),
                 returnStatus: 'Not returned'
             };
@@ -982,7 +981,7 @@ function extractOrderDataFromCard(orderCard) {
                 const order = {
                     itemName: text,
                     amazonLink: href.startsWith('http') ? href : 'https://amazon.in' + href,
-                    price: orderTotal || '₹0.00',
+                    price: orderTotal,
                     dateOrdered: orderDate ? parseAmazonDateToISO(orderDate) : getDefaultDate(),
                     returnStatus: 'Not returned'
                 };
@@ -1362,6 +1361,17 @@ function handleShareSelected() {
     
     console.log(`Sharing ${selectedOrders.length} selected orders`);
     
+    // Prepare orders for dashboard storage with unique IDs
+    const ordersForDashboard = selectedOrders.map(order => ({
+        ...order,
+        id: createOrderId(order), // Ensure each order has a unique ID
+        extractedAt: new Date().toISOString(),
+        shared: true
+    }));
+    
+    // Save to Chrome storage for dashboard persistence
+    saveToDashboard(ordersForDashboard);
+    
     // Log the selected orders
     logOrderHistory(selectedOrders);
     
@@ -1370,6 +1380,38 @@ function handleShareSelected() {
         console.log('Closing popup...');
         closePopup();
     }, 100);
+}
+
+// Save orders to Chrome storage for dashboard access
+function saveToDashboard(orders) {
+    console.log('Saving orders to dashboard storage...');
+    
+    // Get existing orders from storage
+    chrome.storage.local.get(['amazonOrders'], function(result) {
+        const existingOrders = result.amazonOrders || [];
+        const existingIds = new Set(existingOrders.map(order => order.id));
+        
+        // Filter out duplicate orders
+        const newOrders = orders.filter(order => !existingIds.has(order.id));
+        
+        if (newOrders.length > 0) {
+            const updatedOrders = [...existingOrders, ...newOrders];
+            
+            // Save updated orders to storage
+            chrome.storage.local.set({ amazonOrders: updatedOrders }, function() {
+                console.log(`Saved ${newOrders.length} new orders to dashboard`);
+                
+                // Notify popup about new orders
+                chrome.runtime.sendMessage({
+                    type: 'ordersExtracted',
+                    orders: newOrders,
+                    total: updatedOrders.length
+                });
+            });
+        } else {
+            console.log('No new orders to save (all already exist in dashboard)');
+        }
+    });
 }
 
 function logOrderHistory(orders) {

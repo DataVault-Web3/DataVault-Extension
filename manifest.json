@@ -5,7 +5,8 @@
   "description": "Consent-based Amazon order history sharing extension",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "*://amazon.in/*",
