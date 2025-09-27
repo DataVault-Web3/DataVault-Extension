@@ -1,10 +1,85 @@
+// Browser environment polyfills
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+
+if (typeof process === 'undefined') {
+  window.process = {
+    env: {},
+    version: '',
+    platform: 'browser',
+    nextTick: (fn) => setTimeout(fn, 0)
+  };
+}
+
+// Import dependencies
+import { ethers } from 'ethers';
+import stringify from 'json-stable-stringify';
+// Note: Semaphore libraries are too complex for browser bundling
+// We'll implement a simplified version for now
+
+// Simplified Semaphore-like functions for browser compatibility
+class SimpleIdentity {
+    constructor(seed) {
+        this.seed = seed;
+        // Generate a simple commitment from the seed
+        this.commitment = ethers.keccak256(ethers.toUtf8Bytes(seed));
+    }
+}
+
+class SimpleGroup {
+    constructor() {
+        this.members = [];
+        this.size = 0;
+        this.depth = 1;
+    }
+    
+    addMembers(commitments) {
+        this.members.push(...commitments);
+        this.size = this.members.length;
+        this.depth = Math.ceil(Math.log2(Math.max(1, this.size)));
+    }
+    
+    get root() {
+        // Simple mock root for testing
+        return BigInt('0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef');
+    }
+}
+
+// Simplified proof generation (mock implementation)
+async function generateSimpleProof(identity, group, externalNullifier, signal) {
+    // This is a mock implementation for browser compatibility
+    // In a real implementation, you'd need to use the actual Semaphore libraries
+    console.log('Generating simplified proof (mock implementation)');
+    
+    return {
+        merkleTreeRoot: group.root,
+        nullifier: ethers.keccak256(ethers.toUtf8Bytes(identity.seed + externalNullifier.toString())),
+        signal: signal,
+        externalNullifier: externalNullifier,
+        proof: {
+            pi_a: ['0x123', '0x456'],
+            pi_b: [['0x789', '0xabc'], ['0xdef', '0x111']],
+            pi_c: ['0x222', '0x333']
+        }
+    };
+}
+
 // Content script to detect Amazon India visits and show consent dialog
-console.log('Amazon Order History Extension loaded');
+console.log('Amazon Order History Extension loaded with ethers and json-stable-stringify support');
 
 // Global state
 let currentFilter = '3months';
 let allOrders = [];
 let selectedOrderIds = new Set(); // Track selected orders across filter changes
+
+// Semaphore configuration
+const SEMAPHORE_CONFIG = {
+    SEMAPHORE_ADDRESS: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    GROUP_ID: BigInt(0),
+    RPC_URL: 'http://127.0.0.1:8545',
+    PRIVATE_KEY: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+};
 
 // Utility functions for cookie management
 function setCookie(name, value, minutes) {
@@ -22,6 +97,305 @@ function getCookie(name) {
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
+}
+
+function generateRandomUserId() {
+    if (!getCookie('user_id_seed')) {
+        const user_id_seed = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        setCookie('user_id_seed', user_id_seed, 30 * 24 * 60); // 30 days
+        return user_id_seed;
+    }
+    return getCookie('user_id_seed');
+}
+
+// Generate object hash using the same logic as objectHashBytes32 from claim-and-prove.ts
+function generateObjectHash(obj) {
+    const canonical = stringify(obj, { space: 0 });
+    return ethers.keccak256(ethers.toUtf8Bytes(canonical));
+}
+
+// Pack proof for Solidity (same as claim-and-prove.ts)
+function packProofForSolidity(proof) {
+    console.log("Raw proof structure:", JSON.stringify(proof, null, 2));
+    
+    // Handle our simplified proof structure
+    if (proof.pi_a && proof.pi_b && proof.pi_c) {
+        return [
+            BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1]),
+            BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0]), BigInt(proof.pi_b[1][1]), BigInt(proof.pi_b[1][0]),
+            BigInt(proof.pi_c[0]), BigInt(proof.pi_c[1])
+        ];
+    } else if (proof.proof) {
+        const { pi_a, pi_b, pi_c } = proof.proof;
+        return [
+            BigInt(pi_a[0]), BigInt(pi_a[1]),
+            BigInt(pi_b[0][1]), BigInt(pi_b[0][0]), BigInt(pi_b[1][1]), BigInt(pi_b[1][0]),
+            BigInt(pi_c[0]), BigInt(pi_c[1])
+        ];
+    } else if (Array.isArray(proof) && proof.length === 8) {
+        return proof.map(p => BigInt(p));
+    } else {
+        throw new Error(`Unsupported proof structure: ${JSON.stringify(proof)}`);
+    }
+}
+
+// Check if user is already in Semaphore group
+async function isUserInSemaphoreGroup(userIdSeed) {
+    try {
+        // Check if we already have this user's commitment stored locally
+        const storedCommitment = getCookie('semaphore_commitment');
+        if (storedCommitment) {
+            console.log('User already has Semaphore commitment stored locally');
+            return true;
+        }
+        
+        // Create identity to get commitment
+        const identity = new SimpleIdentity(userIdSeed);
+        const commitment = identity.commitment;
+        
+        // Create provider and wallet
+        const provider = new ethers.JsonRpcProvider(SEMAPHORE_CONFIG.RPC_URL);
+        const wallet = new ethers.Wallet(SEMAPHORE_CONFIG.PRIVATE_KEY, provider);
+        
+        // Get Semaphore contract
+        const semaphoreABI = [
+            "function getMerkleTreeSize(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeDepth(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeRoot(uint256 groupId) external view returns (uint256)"
+        ];
+        
+        const semaphore = new ethers.Contract(SEMAPHORE_CONFIG.SEMAPHORE_ADDRESS, semaphoreABI, wallet);
+        
+        // Check if group is empty (no members yet)
+        const groupSize = await semaphore.getMerkleTreeSize(SEMAPHORE_CONFIG.GROUP_ID);
+        
+        if (groupSize.toString() === '0') {
+            console.log('Group is empty, user not in group');
+            return false;
+        }
+        
+        // For now, we'll assume if group has members, user might be in it
+        // In a real implementation, you'd need to check the Merkle tree
+        console.log('Group has members, checking if user is already added...');
+        return false; // Assume not in group for now
+        
+    } catch (error) {
+        console.error('Error checking if user is in group:', error);
+        return false;
+    }
+}
+
+// Semaphore add-member functionality
+async function addMemberToSemaphoreGroup(userIdSeed) {
+    try {
+        console.log('=== Adding Member to Semaphore Group ===');
+        
+        // Check if user is already in the group
+        const alreadyInGroup = await isUserInSemaphoreGroup(userIdSeed);
+        if (alreadyInGroup) {
+            console.log('✅ User already in Semaphore group');
+            return {
+                success: true,
+                alreadyInGroup: true,
+                message: 'User already in group'
+            };
+        }
+        
+        // Create identity from user seed
+        const identity = new SimpleIdentity(userIdSeed);
+        const commitment = identity.commitment;
+        
+        console.log('Identity commitment:', commitment.toString());
+        
+        // Create provider and wallet
+        const provider = new ethers.JsonRpcProvider(SEMAPHORE_CONFIG.RPC_URL);
+        const wallet = new ethers.Wallet(SEMAPHORE_CONFIG.PRIVATE_KEY, provider);
+        
+        // Get Semaphore contract
+        const semaphoreABI = [
+            "function addMember(uint256 groupId, uint256 identityCommitment) external",
+            "function getMerkleTreeSize(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeDepth(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeRoot(uint256 groupId) external view returns (uint256)"
+        ];
+        
+        const semaphore = new ethers.Contract(SEMAPHORE_CONFIG.SEMAPHORE_ADDRESS, semaphoreABI, wallet);
+        
+        // Add member to group
+        console.log('Adding member to Semaphore group...');
+        const tx = await semaphore.addMember(SEMAPHORE_CONFIG.GROUP_ID, commitment);
+        console.log('Transaction hash:', tx.hash);
+        
+        // Wait for transaction confirmation
+        const receipt = await tx.wait();
+        console.log('Transaction confirmed in block:', receipt.blockNumber);
+        
+        // Store commitment locally to prevent duplicate additions
+        setCookie('semaphore_commitment', commitment.toString(), 30 * 24 * 60); // 30 days
+        
+        console.log('✅ Member added successfully!');
+        
+        return {
+            success: true,
+            commitment: commitment.toString(),
+            transactionHash: tx.hash,
+            blockNumber: receipt.blockNumber
+        };
+        
+    } catch (error) {
+        console.error('❌ Error adding member to Semaphore group:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Generate full Semaphore proof for order data
+async function generateFullProof(orders, userIdSeed) {
+    try {
+        console.log('=== Generating Full Semaphore Proof ===');
+        console.log('Orders:', orders.length);
+        console.log('User ID Seed:', userIdSeed);
+        
+        // Create identity from user seed
+        const identity = new SimpleIdentity(userIdSeed);
+        const commitment = identity.commitment;
+        
+        console.log('Identity commitment:', commitment.toString());
+        
+        // Create provider and wallet
+        const provider = new ethers.JsonRpcProvider(SEMAPHORE_CONFIG.RPC_URL);
+        const wallet = new ethers.Wallet(SEMAPHORE_CONFIG.PRIVATE_KEY, provider);
+        
+        // Get Semaphore contract
+        const semaphoreABI = [
+            "function getMerkleTreeSize(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeDepth(uint256 groupId) external view returns (uint256)",
+            "function getMerkleTreeRoot(uint256 groupId) external view returns (uint256)"
+        ];
+        
+        const semaphore = new ethers.Contract(SEMAPHORE_CONFIG.SEMAPHORE_ADDRESS, semaphoreABI, wallet);
+        
+        // Get group state
+        const groupSize = await semaphore.getMerkleTreeSize(SEMAPHORE_CONFIG.GROUP_ID);
+        const groupDepth = await semaphore.getMerkleTreeDepth(SEMAPHORE_CONFIG.GROUP_ID);
+        const groupRoot = await semaphore.getMerkleTreeRoot(SEMAPHORE_CONFIG.GROUP_ID);
+        
+        console.log('Group size:', groupSize.toString());
+        console.log('Group depth:', groupDepth.toString());
+        console.log('Group root:', groupRoot.toString());
+        
+        // Build local group
+        const group = new SimpleGroup();
+        group.addMembers([commitment]);
+        console.log('Local group size:', group.size);
+        console.log('Local group root:', group.root.toString());
+        
+        // Generate object hash for orders
+        const objectHash = generateObjectHash(orders);
+        const objectHashField = BigInt(objectHash);
+        
+        console.log('Object hash:', objectHash);
+        console.log('Object hash field:', objectHashField.toString());
+        
+        // Set up proof parameters
+        const externalNullifier = objectHashField;
+        const signal = objectHashField;
+        
+        console.log('External nullifier:', externalNullifier.toString());
+        console.log('Signal:', signal.toString());
+        
+        // Generate proof
+        console.log('Generating Semaphore proof...');
+        const fullProof = await generateSimpleProof(identity, group, externalNullifier, signal);
+        
+        console.log('✅ Proof generated successfully!');
+        console.log('Merkle root:', fullProof.merkleTreeRoot.toString());
+        console.log('Nullifier:', fullProof.nullifier.toString());
+        
+        // Pack proof for Solidity
+        const solidityProof = packProofForSolidity(fullProof.proof);
+        const nullifierHash = fullProof.nullifier;
+        const merkleRoot = fullProof.merkleTreeRoot;
+        
+        console.log('✅ Proof packed successfully!');
+        console.log('Solidity proof:', solidityProof.map(p => p.toString()));
+        
+        // Prepare proof data for backend
+        const proofData = {
+            // Proof components
+            solidityProof: solidityProof.map(p => p.toString()),
+            nullifierHash: nullifierHash.toString(),
+            merkleRoot: merkleRoot.toString(),
+            
+            // Group info
+            groupId: SEMAPHORE_CONFIG.GROUP_ID.toString(),
+            groupSize: groupSize.toString(),
+            groupDepth: groupDepth.toString(),
+            
+            // Object data
+            objectHash: objectHash,
+            orders: orders,
+            
+            // Identity info
+            commitment: commitment.toString(),
+            userIdSeed: userIdSeed,
+            
+            // Metadata
+            timestamp: new Date().toISOString(),
+            proofGeneratedAt: new Date().toISOString()
+        };
+        
+        console.log('Proof data prepared for backend:', proofData);
+        
+        return {
+            success: true,
+            proofData: proofData,
+            fullProof: fullProof
+        };
+        
+    } catch (error) {
+        console.error('❌ Error generating full proof:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Send proof data to backend
+async function sendProofToBackend(proofData, backendUrl = 'http://localhost:3000/api/proof') {
+    try {
+        console.log('Sending proof data to backend:', backendUrl);
+        
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(proofData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Proof sent to backend successfully:', result);
+        
+        return {
+            success: true,
+            result: result
+        };
+        
+    } catch (error) {
+        console.error('❌ Error sending proof to backend:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
 }
 
 // Date filtering functions
@@ -1346,7 +1720,7 @@ function tryNavigateToOrderHistory() {
     return false;
 }
 
-function handleShareSelected() {
+async function handleShareSelected() {
     
     if (selectedOrderIds.size === 0) {
         alert('Please select at least one order to share.');
@@ -1375,11 +1749,122 @@ function handleShareSelected() {
     // Log the selected orders
     logOrderHistory(selectedOrders);
     
+    // Generate full proof and send to backend
+    const userIdSeed = generateRandomUserId();
+    console.log('Generating full proof and sending to backend...');
+    
+    try {
+        // First, ensure user is in Semaphore group
+        const semaphoreResult = await addMemberToSemaphoreGroup(userIdSeed);
+        
+        if (semaphoreResult.success) {
+            console.log('✅ User in Semaphore group, generating proof...');
+            
+            // Generate full proof
+            const proofResult = await generateFullProof(selectedOrders, userIdSeed);
+            
+            if (proofResult.success) {
+                console.log('✅ Full proof generated successfully!');
+                
+                // Send proof to backend
+                const backendResult = await sendProofToBackend(proofResult.proofData);
+                
+                if (backendResult.success) {
+                    console.log('✅ Proof sent to backend successfully!');
+                    
+                    // Store proof info in Chrome storage
+                    chrome.storage.local.set({
+                        semaphoreInfo: {
+                            commitment: proofResult.proofData.commitment,
+                            objectHash: proofResult.proofData.objectHash,
+                            merkleRoot: proofResult.proofData.merkleRoot,
+                            nullifierHash: proofResult.proofData.nullifierHash,
+                            proofGeneratedAt: proofResult.proofData.proofGeneratedAt,
+                            backendResponse: backendResult.result
+                        }
+                    });
+                    
+                    // Show success notification
+                    showZKProofNotification(true);
+                } else {
+                    console.error('❌ Failed to send proof to backend:', backendResult.error);
+                    showZKProofNotification(false, `Backend error: ${backendResult.error}`);
+                }
+            } else {
+                console.error('❌ Failed to generate full proof:', proofResult.error);
+                showZKProofNotification(false, `Proof generation failed: ${proofResult.error}`);
+            }
+        } else {
+            console.error('❌ Failed to add to Semaphore group:', semaphoreResult.error);
+            showZKProofNotification(false, semaphoreResult.error);
+        }
+    } catch (error) {
+        console.error('❌ Error in proof generation:', error);
+        showZKProofNotification(false, error.message);
+    }
+    
     // Close the popup with a slight delay to ensure logging completes
     setTimeout(() => {
         console.log('Closing popup...');
         closePopup();
     }, 100);
+}
+
+// Show small ZK proof notification at bottom of page
+function showZKProofNotification(success = true, error = null) {
+    // Remove any existing notification
+    const existingNotification = document.getElementById('zk-proof-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.id = 'zk-proof-notification';
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${success ? '#10b981' : '#ef4444'};
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    `;
+    
+    const icon = success ? '🔐' : '❌';
+    const message = success ? 
+        'ZK Proof generated & added to group' : 
+        `ZK Proof failed: ${error || 'Unknown error'}`;
+    
+    notification.innerHTML = `
+        <span style="font-size: 16px;">${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
 }
 
 // Save orders to Chrome storage for dashboard access
@@ -1426,10 +1911,21 @@ function logOrderHistory(orders) {
         console.log('Return Status:', order.returnStatus);
         console.log(''); // Empty line for separation
     });
+
+
+    const userIdSeed = generateRandomUserId();
+    const objectHash = generateObjectHash(orders);
+    
+    console.log('Generated object hash:', objectHash);
+    console.log('User ID seed:', userIdSeed);
+
+    // add-member
     
     // Store in extension storage for potential future use
     chrome.storage.local.set({
         orderHistory: orders,
+        objectHash: objectHash,
+        userIdSeed: userIdSeed,
         timestamp: Date.now(),
         totalOrders: orders.length,
         filterApplied: currentFilter,

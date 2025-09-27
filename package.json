@@ -1,0 +1,26 @@
+{
+  "name": "datavault-extension",
+  "version": "1.0.0",
+  "description": "DataVault Chrome Extension with ethers and json-stable-stringify support",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "json-stable-stringify": "^1.3.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "copy-webpack-plugin": "^11.0.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-loader": "^9.1.3"
+  },
+  "keywords": ["chrome-extension", "ethers", "blockchain"],
+  "author": "",
+  "license": "MIT"
+}
