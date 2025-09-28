@@ -25649,10 +25649,10 @@ var selectedOrderIds = new Set(); // Track selected orders across filter changes
 
 // Semaphore configuration
 var SEMAPHORE_CONFIG = {
-  SEMAPHORE_ADDRESS: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+  SEMAPHORE_ADDRESS: '0xac2eF4f3a36536491024bD7434F0BD9EEE880a82',
   GROUP_ID: BigInt(0),
-  RPC_URL: 'http://127.0.0.1:8545',
-  PRIVATE_KEY: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+  RPC_URL: 'https://polygon-amoy.g.alchemy.com/v2/A-d4kXY7BjlLhxbq276wkemWEo5MXUDt',
+  PRIVATE_KEY: '0x9965cc10bc4b9c500c12eecb9fc5b0e11fae0540115f66cad2af04c4c205f603'
 };
 
 // Utility functions for cookie management
