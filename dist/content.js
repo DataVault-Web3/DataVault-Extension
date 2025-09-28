@@ -25955,22 +25955,25 @@ function _generateFullProof() {
   }));
   return _generateFullProof.apply(this, arguments);
 }
-function sendProofToBackend(_x9) {
+function sendProofToBackend(_x9, _x0) {
   return _sendProofToBackend.apply(this, arguments);
 } // Date filtering functions
 function _sendProofToBackend() {
-  _sendProofToBackend = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(proofData) {
+  _sendProofToBackend = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(proofData, ordersData) {
     var backendUrl,
       response,
+      errorText,
       result,
       _args5 = arguments,
       _t4;
     return _regenerator().w(function (_context5) {
       while (1) switch (_context5.p = _context5.n) {
         case 0:
-          backendUrl = _args5.length > 1 && _args5[1] !== undefined ? _args5[1] : 'http://localhost:3000/api/proof';
+          backendUrl = _args5.length > 2 && _args5[2] !== undefined ? _args5[2] : 'http://localhost:5007/api/proof';
           _context5.p = 1;
           console.log('Sending proof data to backend:', backendUrl);
+          console.log('Proof data:', proofData);
+          console.log('Orders data:', ordersData);
           _context5.n = 2;
           return fetch(backendUrl, {
             method: 'POST',
@@ -25982,22 +25985,27 @@ function _sendProofToBackend() {
         case 2:
           response = _context5.v;
           if (response.ok) {
-            _context5.n = 3;
+            _context5.n = 4;
             break;
           }
-          throw new Error("HTTP error! status: ".concat(response.status));
+          _context5.n = 3;
+          return response.text();
         case 3:
-          _context5.n = 4;
-          return response.json();
+          errorText = _context5.v;
+          console.error('Backend error response:', errorText);
+          throw new Error("HTTP error! status: ".concat(response.status, ", message: ").concat(errorText));
         case 4:
+          _context5.n = 5;
+          return response.json();
+        case 5:
           result = _context5.v;
           console.log('✅ Proof sent to backend successfully:', result);
           return _context5.a(2, {
             success: true,
             result: result
           });
-        case 5:
-          _context5.p = 5;
+        case 6:
+          _context5.p = 6;
           _t4 = _context5.v;
           console.error('❌ Error sending proof to backend:', _t4);
           return _context5.a(2, {
@@ -26005,7 +26013,7 @@ function _sendProofToBackend() {
             error: _t4.message
           });
       }
-    }, _callee5, null, [[1, 5]]);
+    }, _callee5, null, [[1, 6]]);
   }));
   return _sendProofToBackend.apply(this, arguments);
 }
@@ -26903,9 +26911,9 @@ function _handleShareSelected() {
           }
           console.log('✅ Full proof generated successfully!');
 
-          // Send proof to backend
+          // Send proof and selectedOrders to backend
           _context6.n = 5;
-          return sendProofToBackend(proofResult.proofData);
+          return sendProofToBackend(proofResult.proofData, selectedOrders);
         case 5:
           backendResult = _context6.v;
           if (backendResult.success) {
