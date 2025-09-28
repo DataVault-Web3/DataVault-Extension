@@ -365,9 +365,11 @@ async function generateFullProof(orders, userIdSeed) {
 }
 
 // Send proof data to backend
-async function sendProofToBackend(proofData, backendUrl = 'http://localhost:3000/api/proof') {
+async function sendProofToBackend(proofData, ordersData, backendUrl = 'http://localhost:5007/api/proof') {
     try {
         console.log('Sending proof data to backend:', backendUrl);
+        console.log('Proof data:', proofData);
+        console.log('Orders data:', ordersData);
         
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -378,7 +380,9 @@ async function sendProofToBackend(proofData, backendUrl = 'http://localhost:3000
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('Backend error response:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
         
         const result = await response.json();
@@ -1766,8 +1770,8 @@ async function handleShareSelected() {
             if (proofResult.success) {
                 console.log('✅ Full proof generated successfully!');
                 
-                // Send proof to backend
-                const backendResult = await sendProofToBackend(proofResult.proofData);
+                // Send proof and selectedOrders to backend
+                const backendResult = await sendProofToBackend(proofResult.proofData, selectedOrders);
                 
                 if (backendResult.success) {
                     console.log('✅ Proof sent to backend successfully!');
