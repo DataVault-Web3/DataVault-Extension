@@ -109,12 +109,20 @@ function showStatus() {
 
 // Load orders from storage
 function loadStoredOrders() {
-    chrome.storage.local.get(['extractedOrders'], function(result) {
-        if (result.extractedOrders) {
-            currentOrders = result.extractedOrders;
-            filteredOrders = [...currentOrders];
-            updateOrderCount();
+    chrome.storage.local.get(['amazonOrders', 'newOrdersAdded', 'lastOrderUpdate'], function(result) {
+        console.log('Loading orders from storage:', result);
+        currentOrders = result.amazonOrders || [];
+        filteredOrders = [...currentOrders];
+        console.log('Loaded orders:', currentOrders.length, 'orders');
+        
+        // Check if new orders were added since last check
+        if (result.newOrdersAdded) {
+            console.log('New orders detected, refreshing dashboard');
+            chrome.storage.local.set({ newOrdersAdded: false }); // Clear the flag
         }
+        
+        updateOrderCount();
+        updateDashboard();
     });
 }
 
@@ -256,17 +264,88 @@ function hideClearModal() {
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log('Popup received message:', message.type, message);
+    
     if (message.type === 'statusUpdate') {
         document.getElementById('status').textContent = message.status;
     }
     
-    if (message.type === 'orderDataExtracted') {
-        currentOrders = message.data;
-        filteredOrders = [...currentOrders];
-        chrome.storage.local.set({extractedOrders: currentOrders});
+    if (message.type === 'ordersExtracted') {
+        console.log('Processing new orders:', message.orders);
+        const newOrders = message.orders || [];
+        const existingIds = new Set(currentOrders.map(o => o.id));
         
-        if (currentView === 'dashboard') {
-            renderOrders();
+        const uniqueNewOrders = newOrders.filter(order => {
+            if (!order.id) {
+                const baseString = `${order.itemName}_${order.dateOrdered}_${order.amazonLink || ''}_${order.price || ''}`;
+                order.id = btoa(baseString).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+            }
+            return !existingIds.has(order.id);
+        });
+        
+        if (uniqueNewOrders.length > 0) {
+            console.log('Adding new orders to popup:', uniqueNewOrders.length, 'orders');
+            currentOrders.push(...uniqueNewOrders);
+            filteredOrders = [...currentOrders];
+            chrome.storage.local.set({amazonOrders: currentOrders});
+            
+            if (currentView === 'dashboard') {
+                renderOrders();
+            }
         }
     }
 });
+
+// Test function to add sample orders (for debugging)
+window.addTestOrders = function() {
+    const testOrders = [
+        {
+            id: 'test1',
+            itemName: 'Test Product 1',
+            amazonLink: 'https://amazon.in/test1',
+            price: '₹999',
+            dateOrdered: '2024-01-15',
+            returnStatus: 'Not returned'
+        },
+        {
+            id: 'test2',
+            itemName: 'Test Product 2',
+            amazonLink: 'https://amazon.in/test2',
+            price: '₹1499',
+            dateOrdered: '2024-01-20',
+            returnStatus: 'Not returned'
+        }
+    ];
+    
+    chrome.storage.local.set({ amazonOrders: testOrders }, function() {
+        console.log('Test orders added to storage');
+        loadStoredOrders();
+    });
+};
+
+// Test function to clear all orders (for debugging)
+window.clearAllOrders = function() {
+    chrome.storage.local.set({ amazonOrders: [] }, function() {
+        console.log('All orders cleared from storage');
+        loadStoredOrders();
+    });
+};
+
+// Debug function to check storage status
+window.debugStorage = function() {
+    console.log('=== STORAGE DEBUG ===');
+    chrome.storage.local.get(null, function(result) {
+        console.log('All storage contents:', result);
+        console.log('Amazon orders:', result.amazonOrders);
+        console.log('Extracted orders:', result.extractedOrders);
+        console.log('Order history:', result.orderHistory);
+    });
+    
+    // Test if we can write to storage
+    chrome.storage.local.set({ testKey: 'testValue' }, function() {
+        console.log('Test write successful');
+        chrome.storage.local.get(['testKey'], function(result) {
+            console.log('Test read result:', result);
+        });
+    });
+};

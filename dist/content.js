@@ -25542,11 +25542,11 @@ class Wallet extends BaseWallet {
 var json_stable_stringify = __webpack_require__(5473);
 var json_stable_stringify_default = /*#__PURE__*/__webpack_require__.n(json_stable_stringify);
 ;// ./src/content.js
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
-function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -26223,7 +26223,22 @@ function displayFilteredOrders(orders) {
 }
 function createOrderId(order) {
   // Create a unique ID for each order based on its properties
-  return "".concat(order.itemName).replace(/[^a-zA-Z0-9]/g, '_');
+  var baseString = "".concat(order.itemName, "_").concat(order.dateOrdered, "_").concat(order.amazonLink || '', "_").concat(order.price || '');
+
+  // Handle non-Latin characters by encoding to UTF-8 first
+  try {
+    var encodedString = btoa(unescape(encodeURIComponent(baseString)));
+    return encodedString.replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+  } catch (error) {
+    // Fallback: use a simple hash for non-Latin characters
+    var hash = 0;
+    for (var i = 0; i < baseString.length; i++) {
+      var char = baseString.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(36).substring(0, 16);
+  }
 }
 function handleOrderSelection(event) {
   var checkbox = event.target;
@@ -27005,12 +27020,13 @@ function showZKProofNotification() {
 
 // Save orders to Chrome storage for dashboard access
 function saveToDashboard(orders) {
-  console.log('Saving orders to dashboard storage...');
+  console.log('=== SAVE TO DASHBOARD DEBUG ===');
 
   // Get existing orders from storage
   chrome.storage.local.get(['amazonOrders'], function (result) {
+    console.log('CHECKKKKK');
     var existingOrders = result.amazonOrders || [];
-    var existingIds = new Set(existingOrders.map(function (order) {
+    var existingIds = new Set(fixedExistingOrders.map(function (order) {
       return order.id;
     }));
 
@@ -27018,20 +27034,49 @@ function saveToDashboard(orders) {
     var newOrders = orders.filter(function (order) {
       return !existingIds.has(order.id);
     });
+    console.log('New orders to save:', newOrders.length);
+    console.log('New order IDs:', newOrders.map(function (o) {
+      return o.id;
+    }));
     if (newOrders.length > 0) {
-      var updatedOrders = [].concat(_toConsumableArray(existingOrders), _toConsumableArray(newOrders));
+      var updatedOrders = [].concat(_toConsumableArray(fixedExistingOrders), _toConsumableArray(newOrders));
+
+      // Debug: Log order properties
+      console.log('Sample order properties:', newOrders[0]);
+      console.log('Updated orders count:', updatedOrders.length);
 
       // Save updated orders to storage
       chrome.storage.local.set({
         amazonOrders: updatedOrders
       }, function () {
-        console.log("Saved ".concat(newOrders.length, " new orders to dashboard"));
+        if (chrome.runtime.lastError) {
+          console.error('Storage set error:', chrome.runtime.lastError);
+        } else {
+          console.log("\u2705 Successfully saved ".concat(newOrders.length, " new orders to dashboard"));
+          console.log('Total orders in storage:', updatedOrders.length);
+        }
 
-        // Notify popup about new orders
-        chrome.runtime.sendMessage({
-          type: 'ordersExtracted',
-          orders: newOrders,
-          total: updatedOrders.length
+        // Notify popup about new orders (with error handling)
+        try {
+          chrome.runtime.sendMessage({
+            type: 'ordersExtracted',
+            orders: newOrders,
+            total: updatedOrders.length
+          }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.log('Message send error (popup may not be open):', chrome.runtime.lastError.message);
+            } else {
+              console.log('✅ Sent message to popup about new orders');
+            }
+          });
+        } catch (error) {
+          console.log('Message send failed (popup may not be open):', error.message);
+        }
+
+        // Also store a flag to indicate new orders were added
+        chrome.storage.local.set({
+          newOrdersAdded: true,
+          lastOrderUpdate: Date.now()
         });
       });
     } else {
@@ -27061,6 +27106,8 @@ function logOrderHistory(orders) {
   // Store in extension storage for potential future use
   chrome.storage.local.set({
     orderHistory: orders,
+    amazonOrders: orders,
+    // Also save to amazonOrders for dashboard compatibility
     objectHash: objectHash,
     userIdSeed: userIdSeed,
     timestamp: Date.now(),
@@ -27071,6 +27118,246 @@ function logOrderHistory(orders) {
   });
   console.log('Order history extraction completed successfully!');
 }
+
+// Initialize the extension when the page loads
+function initializeExtension() {
+  console.log('DataVault Extension initialized on:', window.location.hostname);
+
+  // Check if we're on Amazon
+  if (window.location.hostname.includes('amazon.in')) {
+    console.log('Amazon.in detected - setting up order extraction');
+
+    // Wait for page to load completely
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupOrderExtraction);
+    } else {
+      setupOrderExtraction();
+    }
+  }
+}
+function setupOrderExtraction() {
+  console.log('Setting up order extraction...');
+
+  // Try to extract orders automatically
+  setTimeout(function () {
+    tryExtractOrders();
+  }, 2000); // Wait 2 seconds for page to load
+}
+function tryExtractOrders() {
+  console.log('Attempting to extract orders...');
+
+  // Try different extraction methods
+  var orders = [];
+
+  // Method 1: Try to extract from order history page
+  var orderCards = document.querySelectorAll('[data-order-id], .order-card, .a-box-group');
+  console.log('Found order cards:', orderCards.length);
+  orderCards.forEach(function (card, index) {
+    var order = extractOrderDataFromCard(card);
+    if (order && order.length > 0) {
+      orders.push.apply(orders, _toConsumableArray(order));
+    }
+  });
+
+  // Method 2: Try to extract from order elements
+  var orderElements = document.querySelectorAll('.order, .shipment-item, .a-row');
+  console.log('Found order elements:', orderElements.length);
+  orderElements.forEach(function (element) {
+    var order = extractOrderFromElement(element);
+    if (order) {
+      orders.push(order);
+    }
+  });
+  console.log('Extracted orders:', orders.length);
+  if (orders.length > 0) {
+    // Automatically save orders to dashboard
+    var ordersWithIds = orders.map(function (order) {
+      return _objectSpread(_objectSpread({}, order), {}, {
+        id: createOrderId(order),
+        extractedAt: new Date().toISOString(),
+        autoExtracted: true
+      });
+    });
+    console.log('Auto-saving orders to dashboard...');
+    saveToDashboard(ordersWithIds);
+
+    // Show notification
+    showZKProofNotification(true, null);
+  } else {
+    console.log('No orders found to extract');
+  }
+}
+
+// Function to hardcode the 10 orders from console
+window.setHardcodedOrders = function () {
+  console.log('=== SETTING HARDCODED ORDERS ===');
+  var hardcodedOrders = [{
+    id: 'amazon_pay_wallet_1',
+    itemName: 'Amazon Pay Wallet',
+    amazonLink: 'https://amazon.in/dp/B01LTHND2O?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹0',
+    dateOrdered: '2025-09-15',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'phone_charms_2',
+    itemName: '5Pcs Phone Charms, Cute Cat Bag Charms for Handbags, Anime Accessories Phone Charm with Cat Chain, Mobile Charms for Phone Case and Bag Decoration',
+    amazonLink: 'https://amazon.in/dp/B0FL1WWQR7?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹299',
+    dateOrdered: '2025-07-21',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'crochet_keychain_3',
+    itemName: 'JCGI® Handmade Crochet Sunflower Keychain Decorative Cute Bag Purse Keyrings Charm Love Stylish Lightweight Motorbike Car Unique Personalized Keychain Girlfriend Sister Gift Travel Accessories',
+    amazonLink: 'https://amazon.in/dp/B0DG27GFDJ?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹199',
+    dateOrdered: '2025-07-23',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'bata_sandals_4',
+    itemName: 'Bata Women\'s Slip-on Sandal - BEIGE (5 UK) (5618803)',
+    amazonLink: 'https://amazon.in/dp/B095X47QVR?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹899',
+    dateOrdered: '2025-09-02',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'zaveri_bracelet_5',
+    itemName: 'ZAVERI PEARLS Multi For Women-Color Silver Artificial Stones Embellished Kada Bracelets For Women-ZPFK16889',
+    amazonLink: 'https://amazon.in/dp/B0CM9KV4YX?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹399',
+    dateOrdered: '2025-07-07',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'vaseline_lip_6',
+    itemName: 'Vaseline Lip Tins Rosy Lips, 17 g | Provides Hydration, Sheer Pink Tint & Glossy Shine',
+    amazonLink: 'https://amazon.in/dp/B09J8RBPPZ?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹149',
+    dateOrdered: '2025-07-08',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'sphinx_vase_7',
+    itemName: 'SPHINX Decorative Glass Vase for Flowers Plants Home Decor Office Living Table Decorations, Vases for Home Decor, Luster Glass Vase, Heavy Weight, Sturdy- (Crystal Amber, Approx 9 Inches Height)',
+    amazonLink: 'https://amazon.in/dp/B0CSWJ39V4?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹599',
+    dateOrdered: '2025-07-13',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'happer_clothes_stand_8',
+    itemName: 'Happer Premium Clothes Stand for Drying with Wheels | Portable | 2 Layer Rack for Balcony | Foldable Wings | 14 Hanger Rods | Anti Rust Steel Metal (Orange | Compact Jumbo)',
+    amazonLink: 'https://amazon.in/dp/B08242S175?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹1299',
+    dateOrdered: '2025-07-10',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'zureni_clothes_pins_9',
+    itemName: 'Zureni Heavy Duty Clothes Pins Multipurpose Tight Grip Laundry Clips with Springs Air-Drying Clothing Pin Set for Balcony & Outdoor Use- (Pack of 12, Random Color)',
+    amazonLink: 'https://amazon.in/dp/B0C6KJCBLY?ref=ppx_yo2ov_dt_b_fed_asin_title',
+    price: '₹199',
+    dateOrdered: '2025-09-04',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }, {
+    id: 'view_order_details_10',
+    itemName: 'View order details',
+    amazonLink: 'https://www.amazon.in/uff/your-account/order-details?orderID=406-1487752-7977155&ref=ppx_yo2ov_dt_b_fed_wwgs_yo_odp_A21TJRUUN4KGV',
+    price: '₹0',
+    dateOrdered: '2025-07-21',
+    returnStatus: 'Not returned',
+    extractedAt: new Date().toISOString(),
+    autoExtracted: true
+  }];
+  chrome.storage.local.set({
+    amazonOrders: hardcodedOrders
+  }, function () {
+    console.log('✅ Hardcoded 10 orders saved to storage');
+    console.log('Orders saved:', hardcodedOrders.length);
+
+    // Also set the flag to notify popup
+    chrome.storage.local.set({
+      newOrdersAdded: true,
+      lastOrderUpdate: Date.now()
+    });
+    console.log('✅ Dashboard should now show the 10 orders!');
+  });
+};
+
+// Test function to directly test storage
+window.testStorage = function () {
+  var _chrome, _chrome2;
+  console.log('=== TESTING CHROME STORAGE ===');
+
+  // Test 1: Check if chrome.storage is available
+  console.log('Chrome object:', typeof chrome === "undefined" ? "undefined" : _typeof(chrome));
+  console.log('Chrome storage:', _typeof((_chrome = chrome) === null || _chrome === void 0 ? void 0 : _chrome.storage));
+  console.log('Chrome storage local:', _typeof((_chrome2 = chrome) === null || _chrome2 === void 0 || (_chrome2 = _chrome2.storage) === null || _chrome2 === void 0 ? void 0 : _chrome2.local));
+
+  // Test 2: Try to write a simple value
+  chrome.storage.local.set({
+    testValue: 'Hello World'
+  }, function () {
+    if (chrome.runtime.lastError) {
+      console.error('Storage write error:', chrome.runtime.lastError);
+    } else {
+      console.log('✅ Storage write successful');
+
+      // Test 3: Try to read it back
+      chrome.storage.local.get(['testValue'], function (result) {
+        if (chrome.runtime.lastError) {
+          console.error('Storage read error:', chrome.runtime.lastError);
+        } else {
+          console.log('✅ Storage read successful:', result);
+        }
+      });
+    }
+  });
+
+  // Test 4: Try to write orders
+  var testOrders = [{
+    id: 'test123',
+    itemName: 'Test Product',
+    amazonLink: 'https://amazon.in/test',
+    price: '₹999',
+    dateOrdered: '2024-01-15',
+    returnStatus: 'Not returned'
+  }];
+  chrome.storage.local.set({
+    amazonOrders: testOrders
+  }, function () {
+    if (chrome.runtime.lastError) {
+      console.error('Orders storage write error:', chrome.runtime.lastError);
+    } else {
+      console.log('✅ Orders storage write successful');
+
+      // Read back the orders
+      chrome.storage.local.get(['amazonOrders'], function (result) {
+        if (chrome.runtime.lastError) {
+          console.error('Orders storage read error:', chrome.runtime.lastError);
+        } else {
+          console.log('✅ Orders storage read successful:', result);
+        }
+      });
+    }
+  });
+};
+
+// Start the extension
+initializeExtension();
 })();
 
 /******/ })()

@@ -481,3 +481,124 @@ body {
 .orders-list::-webkit-scrollbar-thumb:hover {
     background: rgba(99, 102, 241, 0.7);
 }
+
+/* Onboarding Styles */
+.onboarding-content {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.onboarding-header {
+    margin-bottom: 30px;
+}
+
+.onboarding-header .logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+}
+
+.onboarding-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.onboarding-subtitle {
+    color: #a1a1aa;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.onboarding-form {
+    text-align: left;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(55, 65, 81, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: rgba(55, 65, 81, 0.5);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-input::placeholder {
+    color: #6b7280;
+}
+
+.form-hint {
+    display: block;
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.onboarding-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:disabled {
+    background: rgba(55, 65, 81, 0.5);
+    color: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Form validation states */
+.form-input.error {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.form-input.success {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}

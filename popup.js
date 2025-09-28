@@ -5,25 +5,59 @@ let currentView = 'status';
 let orderToDelete = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    initializePopup();
-    loadStoredOrders();
+    checkOnboardingStatus();
     setupEventListeners();
-    checkAmazonStatus();
 });
+
+// Check if user has completed onboarding
+function checkOnboardingStatus() {
+    chrome.storage.local.get(['userOnboarding'], function(result) {
+        if (result.userOnboarding && result.userOnboarding.completed) {
+            // User has completed onboarding, show main interface
+            initializePopup();
+            loadStoredOrders();
+            checkAmazonStatus();
+        } else {
+            // Show onboarding flow
+            showOnboarding();
+        }
+    });
+}
+
+// Show onboarding interface
+function showOnboarding() {
+    document.getElementById('onboarding-view').style.display = 'block';
+    document.getElementById('status-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'none';
+    currentView = 'onboarding';
+}
 
 // Initialize popup interface
 function initializePopup() {
     const statusView = document.getElementById('status-view');
     const dashboardView = document.getElementById('dashboard-view');
+    const onboardingView = document.getElementById('onboarding-view');
     
     // Ensure status view is shown by default
     statusView.style.display = 'block';
     dashboardView.style.display = 'none';
+    onboardingView.style.display = 'none';
     currentView = 'status';
 }
 
 // Setup all event listeners
 function setupEventListeners() {
+    // Onboarding functionality
+    const payoutAddressInput = document.getElementById('payout-address');
+    const chainSelection = document.getElementById('chain-selection');
+    const completeOnboardingBtn = document.getElementById('complete-onboarding');
+    
+    if (payoutAddressInput && chainSelection && completeOnboardingBtn) {
+        payoutAddressInput.addEventListener('input', validateOnboardingForm);
+        chainSelection.addEventListener('change', validateOnboardingForm);
+        completeOnboardingBtn.addEventListener('click', completeOnboarding);
+    }
+    
     // Navigation buttons
     document.getElementById('dashboard-btn').addEventListener('click', showDashboard);
     document.getElementById('back-btn').addEventListener('click', showStatus);
@@ -39,6 +73,51 @@ function setupEventListeners() {
     document.getElementById('confirm-delete').addEventListener('click', confirmDelete);
     document.getElementById('cancel-clear').addEventListener('click', hideClearModal);
     document.getElementById('confirm-clear').addEventListener('click', confirmClearAll);
+}
+
+// Validate onboarding form
+function validateOnboardingForm() {
+    const payoutAddress = document.getElementById('payout-address').value.trim();
+    const chainSelection = document.getElementById('chain-selection').value;
+    const completeBtn = document.getElementById('complete-onboarding');
+    
+    // Basic validation for Ethereum address format
+    const isValidAddress = payoutAddress.length >= 40 && payoutAddress.startsWith('0x');
+    const isChainSelected = chainSelection !== '';
+    
+    if (isValidAddress && isChainSelected) {
+        completeBtn.disabled = false;
+        completeBtn.textContent = 'Complete Setup';
+    } else {
+        completeBtn.disabled = true;
+        completeBtn.textContent = 'Complete Setup';
+    }
+}
+
+// Complete onboarding process
+function completeOnboarding() {
+    const payoutAddress = document.getElementById('payout-address').value.trim();
+    const chainSelection = document.getElementById('chain-selection').value;
+    
+    const onboardingData = {
+        completed: true,
+        payoutAddress: payoutAddress,
+        selectedChain: chainSelection,
+        completedAt: new Date().toISOString()
+    };
+    
+    chrome.storage.local.set({ userOnboarding: onboardingData }, function() {
+        console.log('Onboarding completed:', onboardingData);
+        // Show success message and transition to main interface
+        showNotification('Setup completed! Welcome to DataVault.', 'success');
+        
+        // Initialize main interface
+        setTimeout(() => {
+            initializePopup();
+            loadStoredOrders();
+            checkAmazonStatus();
+        }, 1000);
+    });
 }
 
 // Check Amazon status and update UI
@@ -65,8 +144,10 @@ function checkAmazonStatus() {
 // Load stored orders from Chrome storage
 function loadStoredOrders() {
     chrome.storage.local.get(['amazonOrders'], function(result) {
+        console.log('Loading orders from storage:', result);
         currentOrders = result.amazonOrders || [];
         filteredOrders = [...currentOrders];
+        console.log('Loaded orders:', currentOrders.length, 'orders');
         updateStatistics();
         updateDashboard();
     });
@@ -103,6 +184,7 @@ function calculateTotalPayout(orders) {
 
 // Show dashboard view
 function showDashboard() {
+    console.log('Showing dashboard, current orders:', currentOrders.length);
     document.getElementById('status-view').style.display = 'none';
     document.getElementById('dashboard-view').style.display = 'block';
     currentView = 'dashboard';
@@ -119,6 +201,7 @@ function showStatus() {
 // Update dashboard with current orders
 function updateDashboard() {
     const ordersList = document.getElementById('orders-list');
+    console.log('Updating dashboard with', filteredOrders.length, 'filtered orders out of', currentOrders.length, 'total orders');
     
     if (filteredOrders.length === 0) {
         ordersList.innerHTML = `
@@ -131,7 +214,9 @@ function updateDashboard() {
         return;
     }
     
-    ordersList.innerHTML = filteredOrders.map(order => `
+    const ordersHTML = filteredOrders.map(order => {
+        console.log('Rendering order:', order);
+        return `
         <div class="order-item" data-order-id="${order.id}">
             <div class="order-header">
                 <div class="order-name truncated" title="${escapeHtml(order.itemName)}">
@@ -144,7 +229,11 @@ function updateDashboard() {
                 ${order.amazonLink ? `<a href="${order.amazonLink}" class="order-link" target="_blank">View</a>` : ''}
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
+    
+    console.log('Generated orders HTML:', ordersHTML);
+    ordersList.innerHTML = ordersHTML;
     
     updateStatistics();
 }
@@ -323,20 +412,24 @@ function showNotification(message, type) {
 
 // Listen for messages from content script when new orders are extracted
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log('Popup received message:', message.type, message);
     if (message.type === 'ordersExtracted') {
         // Merge new orders with existing ones, avoiding duplicates
         const newOrders = message.orders || [];
         const existingIds = new Set(currentOrders.map(o => o.id));
         
         const uniqueNewOrders = newOrders.filter(order => {
-            // Create a simple ID if none exists
+            // Create a simple ID if none exists (matching content script logic)
             if (!order.id) {
-                order.id = btoa(order.itemName + order.dateOrdered + order.price).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+                const baseString = `${order.itemName}_${order.dateOrdered}_${order.amazonLink || ''}_${order.price || ''}`;
+                order.id = btoa(baseString).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
             }
             return !existingIds.has(order.id);
         });
         
         if (uniqueNewOrders.length > 0) {
+            console.log('Adding new orders to popup:', uniqueNewOrders.length, 'orders');
+            console.log('Sample new order:', uniqueNewOrders[0]);
             currentOrders.push(...uniqueNewOrders);
             filteredOrders = [...currentOrders];
             saveOrders();
@@ -349,3 +442,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Make functions available globally for onclick handlers
 window.showDeletionModal = showDeletionModal;
+
+// Test function to add sample orders (for debugging)
+window.addTestOrders = function() {
+    const testOrders = [
+        {
+            id: 'test1',
+            itemName: 'Test Product 1',
+            amazonLink: 'https://amazon.in/test1',
+            price: '₹999',
+            dateOrdered: '2024-01-15',
+            returnStatus: 'Not returned'
+        },
+        {
+            id: 'test2',
+            itemName: 'Test Product 2',
+            amazonLink: 'https://amazon.in/test2',
+            price: '₹1499',
+            dateOrdered: '2024-01-20',
+            returnStatus: 'Not returned'
+        }
+    ];
+    
+    chrome.storage.local.set({ amazonOrders: testOrders }, function() {
+        console.log('Test orders added to storage');
+        loadStoredOrders();
+    });
+};
+
+// Test function to clear all orders (for debugging)
+window.clearAllOrders = function() {
+    chrome.storage.local.set({ amazonOrders: [] }, function() {
+        console.log('All orders cleared from storage');
+        loadStoredOrders();
+    });
+};
